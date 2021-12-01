@@ -8,7 +8,7 @@ def orderedSublist(codeList, shoppingCart):
     # Split each fruit codes group and search for them in the shopping cart
     foundGroup = False
     splitedGroup = codeList[x].split()
-    print("Group: ", x+1)
+    # print("Group: ", x+1)
     while not foundGroup:
       for i in range(len(splitedGroup)):
         # Check for each of the fruits in the code, save the nextIndex to start the next search from there avoiding searching multiple times
@@ -17,11 +17,11 @@ def orderedSublist(codeList, shoppingCart):
         nextIndexSet = False
         # Clean each input to remove extra spaces or upper case letters
         cleanedFCode = splitedGroup[i].lower().strip()
-        print("outer: ", i, cleanedFCode)
+        # print("outer: ", i, cleanedFCode)
         for j in range(nextStartPoint, len(shoppingCart)):
           cleanedFruit = shoppingCart[j].lower().strip()
           
-          print("inner: ", i, j, cleanedFruit)
+          # print("inner: ", i, j, cleanedFruit)
           # If there is an anything or the fruits match then process a success
           if cleanedFCode == 'anything' or cleanedFCode == cleanedFruit:
             # If there is no new nextIndex and is the first fruit, this could be the next index to use for the next search
@@ -51,10 +51,9 @@ def orderedSublist(codeList, shoppingCart):
         
         # we got to the end of the cart and nothing can be found further
         if len(splitedGroup) - i - 1 > len(shoppingCart) - nextIndex:
-          # print("kill")
           return 0
 
-        # if the first fruit has not been found in all the shopping card then is not valid, else we keep trying
+        # if the first fruit has not been found in all the shopping cart then is not valid, else we keep trying
         if not found:
           if i == 0:
             return 0
@@ -62,6 +61,7 @@ def orderedSublist(codeList, shoppingCart):
   
   return int(foundGroup)
 
+# Tests
 print("Results:")
 print("Res: " + str(orderedSublist([], ["apple ", "orange", "banana", "apple"]))) # 1
 print("Res: " + str(orderedSublist([], []))) # 1
