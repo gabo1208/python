@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'game/style.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+  <ul class="flex justify-between" x-data="apiData()" x-init="fetchData()">
+    <template x-if="loading">
+          <p>Loading...</p>
+      </template>
+      <template x-if="!loading && error">
+          <p x-text="error"></p>
+      </template>
+        <template x-if="!loading && !error">
+          <template x-for="opt in data.questions">
+            <li>
+              <h1 x-text="opt.quote"></h1>
+              <p x-text="opt.option1" @click="alert('Incorrect, try again')"></p>
+              <p x-text="opt.option2" @click="alert('Incorrect, try again')"></p>
+              <p x-text="opt.option3" @click="alert('Incorrect, try again!')"></p>
+              <p x-text="opt.author" @click="alert('Correct! go to the next one!')"></p>
+            </li>
+          </template>
+      </template>
+    </ul>
+
+<script>
+  function apiData() {
+      return {
+          data: {},
+          loading: true,
+          error: null,
+          fetchData() {
+              fetch('{%url 'game:api' %}')
+                  .then(response => response.json())
+                  .then(json => {
+                      this.data = json;
+                      this.loading = false;
+                  })
+                  .catch(err => {
+                      this.error = 'Failed to fetch data';
+                      this.loading = false;
+                  });
+          }
+      }
+  }
+</script>
+{% endblock content %}

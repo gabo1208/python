@@ -1,5 +1,5 @@
 from django.db.models import F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
@@ -8,12 +8,17 @@ from .models import Choice, Question
 
 
 class IndexView(generic.ListView):
+    model = Question
     template_name = "polls/index.html"
-    context_object_name = "latest_question_list"
+    context_object_name = "latest_polls_list"
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by("-pub_date")[:5]
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['polls_url'] = reverse('polls:index')
+        context['latest_polls_list'] = JsonResponse(
+            list(self.object_list.values()), safe=False
+        ).content.decode('utf-8')
+        return context
 
 
 class DetailView(generic.DetailView):
@@ -47,3 +52,8 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+
+
+# API views
+def APIIndexView(request):
+    return JsonResponse(list(Question.objects.values()), safe=False)
