@@ -89,7 +89,7 @@ def get_market_trends():
         if isinstance(closes, pd.Series):
             closes = closes.to_frame()
 
-        pct_change = closes.pct_change()
+        pct_change = closes.ffill().pct_change(fill_method=None)
         
         # Get latest valid row
         if pct_change.shape[0] < 2:
@@ -112,13 +112,28 @@ def get_market_trends():
             # Get price
             price = latest_prices[ticker] if ticker in latest_prices else 0.0
             
+            # Generate News Links
+            safe_ticker = ticker.replace("^", "") # Cleanup for indices if they exist
+            is_crypto = "-USD" in ticker
+            
+            links = []
+            # Yahoo Finance
+            links.append({"name": "Yahoo", "url": f"https://finance.yahoo.com/quote/{ticker}"})
+            # Google Finance
+            links.append({"name": "Google", "url": f"https://www.google.com/finance/quote/{safe_ticker}"})
+            # News Search
+            query = ticker + " news" if not is_crypto else name + " news"
+            news_url = f"https://www.google.com/search?q={query.replace(' ', '+')}&tbm=nws"
+            links.append({"name": "News", "url": news_url})
+
             category_data.append({
                 "ticker": ticker,
                 "name": name,
                 "price": price,
                 "price_str": f"{price:,.2f}",
                 "change": change,
-                "change_str": f"{change*100:+.2f}%"
+                "change_str": f"{change*100:+.2f}%",
+                "links": links
             })
         
         # Sort by best change descending

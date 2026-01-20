@@ -55,7 +55,7 @@ def analyze_and_print(ticker_dict, title):
         closes = closes.to_frame()
 
     # Calculate percentage change
-    pct_change = closes.pct_change()
+    pct_change = closes.ffill().pct_change(fill_method=None)
     
     if pct_change.shape[0] < 2:
          print(f"Not enough history for {title}.")
