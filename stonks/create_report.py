@@ -43,21 +43,32 @@ def generate_html(results):
         script = f.read()
 
     json_data = json.dumps(results_with_recommendations)
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    output_filename = f"{timestamp_str}_market_report.html"
+    output_dir = "output"
+    
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        
+    output_path = os.path.join(output_dir, output_filename)
 
     # Inject data into JS script string first
     injected_script = script.replace('__DATA__', json_data)
     
     # Assembled HTML
+    # We still use a display-friendly timestamp in the HTML if desired, 
+    # but the filename uses the safe format.
+    display_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     html_content = html_template \
         .replace('__STYLES__', styles) \
-        .replace('__TIMESTAMP__', timestamp) \
+        .replace('__TIMESTAMP__', display_timestamp) \
         .replace('__SCRIPT__', injected_script)
     
-    with open("market_report.html", "w") as f:
+    with open(output_path, "w") as f:
         f.write(html_content)
     
-    print("Report generated: market_report.html")
+    print(f"Report generated: {output_path}")
 
 def main():
     print("Gathering data and generating interactive report...")
